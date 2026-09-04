@@ -20,7 +20,7 @@
   },
   "files": {
     "requirements.txt": {
-      "checksum": "58b9b673619233e27a1d28f03ca259ba"
+      "checksum": "1b211ca91a713140e4d78e26ac8e065b"
     },
     ".python-version": {
       "checksum": "789ee353b44223a8ed8031aa190631dd"
@@ -35,7 +35,7 @@
       "checksum": "bdda0f0675779f34f6dddf7b22cd9f6b"
     },
     "uv.lock": {
-      "checksum": "8f7029bdb903d6cd1062c2a83c376028"
+      "checksum": "f8b8ef1ea8b78b2d9f32a43e70df848f"
     }
   }
 }
