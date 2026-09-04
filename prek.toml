@@ -11,11 +11,14 @@ hooks = [
 repo = "https://github.com/astral-sh/ruff-pre-commit"
 rev = "v0.15.6"
 hooks = [
-  { id = "ruff-check", args = [
-    "--fix",
-    "--select",
-    "I,F401",
-  ] },
+  {
+    id = "ruff-check",
+    args = [
+      "--fix",
+      "--select",
+      "I,F401",
+    ]
+  },
   { id = "ruff-format" },
 ]
 
@@ -24,7 +27,44 @@ repo = "https://github.com/astral-sh/uv-pre-commit"
 rev = "0.10.11"
 hooks = [
   { id = "uv-export", args = [
+    "--frozen",
     "--no-hashes",
     "--output-file=requirements.txt",
   ] },
+]
+
+[[repos]]
+repo = "local"
+# Regenerates manifest.json when any file the manifest checksums changes.
+hooks = [
+  {
+    id = "generate-connect-manifest",
+    name = "Generate Connect Manifest",
+    language = "system",
+    entry = "uv run rsconnect write-manifest shiny",
+    args = [
+      ".",
+      "--overwrite",
+      "--requirements-file",
+      "requirements.txt",
+      "--exclude",
+      ".ruff_cache/",
+      "--exclude",
+      "AGENTS.md",
+      "--exclude",
+      "CLAUDE.md",
+      "--exclude",
+      "README.md",
+      "--exclude",
+      "prek.toml",
+    ],
+    files = { glob = [
+      "**/*.py",
+      "uv.lock",
+      "pyproject.toml",
+      ".python-version",
+      "data/**",
+    ] },
+    pass_filenames = false
+  },
 ]

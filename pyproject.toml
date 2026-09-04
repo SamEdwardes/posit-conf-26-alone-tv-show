@@ -16,4 +16,5 @@ dependencies = [
 dev = [
     "prek>=0.5.2",
     "pytest>=9.1.1",
+    "rsconnect-python>=1.30.0",
 ]
