@@ -17,6 +17,16 @@
   --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
     Arial, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Retire Bootstrap's default blue so nothing accents off-palette. */
+  --bs-primary: #5f9e94;
+  --bs-primary-rgb: 95, 158, 148;
+  --bs-link-color: #5f9e94;
+  --bs-link-hover-color: #7ab4aa;
+  --bs-body-color: #d8d5cf;
+  --bs-body-bg: #0b1110;
+  --bs-emphasis-color: #f2efe9;
+  --bs-border-color: rgba(255, 255, 255, 0.12);
 }
 
 html,
@@ -126,19 +136,46 @@ fieldset > legend {
   color: #eae7e1 !important;
 }
 
-.form-check-label {
-  font-size: 0.85rem;
-  color: var(--text-dim);
+.shiny-input-container .form-check {
+  margin-bottom: 0.3rem;
+}
+
+.shiny-input-container .form-check-label,
+.checkbox label,
+.radio label {
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  color: var(--text) !important;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.shiny-input-container .form-check-label:hover {
+  color: #f2efe9 !important;
 }
 
 .form-check-input {
-  background-color: #0a0f0e;
-  border-color: var(--hairline-strong);
+  background-color: #0a0f0e !important;
+  border: 1px solid var(--hairline-strong) !important;
+  width: 0.95em;
+  height: 0.95em;
+  margin-top: 0.3em;
+  box-shadow: none !important;
 }
 
-.form-check-input:checked {
-  background-color: var(--teal);
-  border-color: var(--teal);
+.form-check-input:checked,
+.form-check-input:checked[type="checkbox"],
+.form-check-input:checked[type="radio"] {
+  background-color: var(--teal) !important;
+  border-color: var(--teal) !important;
+}
+
+.form-check-input:focus {
+  border-color: var(--teal) !important;
+  box-shadow: 0 0 0 2px rgba(95, 158, 148, 0.25) !important;
 }
 
 /* Sliders */

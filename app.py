@@ -143,7 +143,7 @@ app_ui = ui.page_sidebar(
         ui.tags.style(CSS_PATH.read_text()),
     ),
     ui.p(
-        "Twelve seasons in the boreal forest. Ten items each. ",
+        "Twelve seasons alone. Ten items each. ",
         ui.em("Nobody is coming to help."),
         class_="lede",
     ),
