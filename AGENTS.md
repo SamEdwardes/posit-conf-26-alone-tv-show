@@ -1,5 +1,11 @@
 # AGENTS.md
 
+## Rules
+
+- Format the code on every turn with `uvx ruff check --select I,F401 --fix . && uvx ruff format .`
+- Lint the code on every turn and fix errors with `uvx ruff --fix`
+- Commit on every turn
+
 ## Tooling
 
 - Python 3.14

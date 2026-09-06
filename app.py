@@ -1,10 +1,50 @@
-"""Shiny for Python app to explore the Alone TV show contestant data Thursday August 27, 2026 07:53."""
+"""Shiny for Python app to explore the Alone TV show contestant data."""
 
 from pathlib import Path
 
 import polars as pl
-from plotnine import aes, geom_histogram, ggplot, labs, theme_minimal
+from plotnine import (
+    aes,
+    element_blank,
+    element_line,
+    element_rect,
+    element_text,
+    geom_histogram,
+    ggplot,
+    labs,
+    scale_fill_manual,
+    theme,
+    theme_minimal,
+)
 from shiny import App, reactive, render, ui
+
+APP_DIR = Path(__file__).parent
+CSV_PATH = APP_DIR / "data" / "alone-contestants.csv"
+CSS_PATH = APP_DIR / "styles.css"
+
+# Palette shared by the CSS theme and the plots.
+INK = "#0f1514"
+TERRACOTTA = "#c5654f"
+TEAL = "#5f9e94"
+TEXT = "#d8d5cf"
+TEXT_FAINT = "#5f5d58"
+HAIRLINE = "#1e2624"
+
+# Ordered ramp used for discrete fills (terracotta -> sand -> teal).
+CATEGORY_COLORS = [
+    "#c5654f",
+    "#d18a6a",
+    "#dcae88",
+    "#c9b394",
+    "#a8ae9c",
+    "#87a89f",
+    "#5f9e94",
+    "#4f8a86",
+    "#437471",
+    "#3a5f5f",
+    "#8a5a4b",
+    "#a3705c",
+]
 
 COLOR_CHOICES = {
     "None": None,
@@ -13,7 +53,6 @@ COLOR_CHOICES = {
     "Status": "Status",
 }
 
-CSV_PATH = Path(__file__).parent / "data" / "alone-contestants.csv"
 CONTESTANTS = pl.read_csv(CSV_PATH)
 
 SEASONS = sorted(CONTESTANTS.get_column("Season").unique().to_list())
@@ -28,11 +67,42 @@ DAYS_MIN, DAYS_MAX = (
     CONTESTANTS.get_column("Days Lasted").max(),
 )
 
+
+def plot_theme() -> theme:
+    """Dark, hairline-and-monospace theme matching the app chrome."""
+    return theme_minimal() + theme(
+        figure_size=(9, 4.5),
+        plot_background=element_rect(fill=INK, color=INK),
+        panel_background=element_rect(fill=INK, color=INK),
+        panel_grid_major_y=element_line(color=HAIRLINE, size=0.5),
+        panel_grid_major_x=element_blank(),
+        panel_grid_minor=element_blank(),
+        axis_text=element_text(color=TEXT_FAINT, size=8, family="monospace"),
+        axis_title=element_text(color=TEXT_FAINT, size=8, family="monospace"),
+        axis_title_x=element_text(margin={"t": 10}),
+        axis_title_y=element_text(margin={"r": 10}),
+        legend_background=element_rect(fill=INK, color=INK),
+        legend_key=element_rect(fill=INK, color=INK),
+        legend_text=element_text(color=TEXT, size=8, family="monospace"),
+        legend_title=element_text(color=TEXT_FAINT, size=8, family="monospace"),
+    )
+
+
+def stat(label: str, value: str, note: str = "", tone: str = "") -> ui.Tag:
+    """One cell in the readout strip above the plot."""
+    return ui.div(
+        ui.div(label, class_="stat-label"),
+        ui.div(value, class_=f"stat-value {tone}".strip()),
+        ui.div(note, class_="stat-note"),
+        class_="stat",
+    )
+
+
 app_ui = ui.page_sidebar(
     ui.sidebar(
         ui.input_select(
             "color_by",
-            "Histogram colour",
+            "Break down by",
             choices=list(COLOR_CHOICES.keys()),
             selected="None",
         ),
@@ -57,17 +127,37 @@ app_ui = ui.page_sidebar(
             max=DAYS_MAX,
             value=[DAYS_MIN, DAYS_MAX],
         ),
+        title="Filters",
+        width=290,
     ),
-    ui.head_content(ui.tags.style("body { background-color: #F9F9F7; }")),
+    ui.head_content(
+        ui.tags.link(rel="preconnect", href="https://fonts.googleapis.com"),
+        ui.tags.link(
+            rel="stylesheet",
+            href=(
+                "https://fonts.googleapis.com/css2"
+                "?family=Inter:wght@200;300;400;600"
+                "&family=JetBrains+Mono:wght@300;400&display=swap"
+            ),
+        ),
+        ui.tags.style(CSS_PATH.read_text()),
+    ),
+    ui.p(
+        "Twelve seasons in the boreal forest. Ten items each. ",
+        ui.em("Nobody is coming to help."),
+        class_="lede",
+    ),
+    ui.output_ui("stat_strip"),
     ui.card(
-        ui.card_header("Days Lasted Distribution"),
+        ui.card_header("Days lasted — distribution"),
         ui.output_plot("days_histogram"),
     ),
     ui.card(
-        ui.card_header("Contestants"),
+        ui.card_header("Contestant log"),
         ui.output_data_frame("contestants_table"),
+        ui.card_footer(ui.output_text("row_count")),
     ),
-    title="🐻 Alone TV Show Explorer",
+    title="Alone",
     fillable=True,
 )
 
@@ -84,29 +174,67 @@ def server(input, output, session):
             pl.col("Days Lasted").is_between(input.days()[0], input.days()[1]),
         ).sort("Season", "Days Lasted")
 
+    @render.ui
+    def stat_strip():
+        data = filtered_data()
+        n = data.height
+
+        if n == 0:
+            return ui.div(
+                stat("Contestants", "0", "no rows match these filters"),
+                class_="stat-strip",
+            )
+
+        days = data.get_column("Days Lasted")
+        longest = data.sort("Days Lasted", descending=True).row(0, named=True)
+        winners = data.filter(pl.col("Status") == "Winner").height
+
+        return ui.div(
+            stat("Contestants", f"{n}", f"of {CONTESTANTS.height} on record"),
+            stat("Median days", f"{days.median():.0f}", "half made it this far"),
+            stat(
+                "Longest run",
+                f"{longest['Days Lasted']}",
+                f"{longest['Name']} · S{longest['Season']}",
+                tone="cool",
+            ),
+            stat("Winners", f"{winners}", "last one standing", tone="accent"),
+            stat("Median age", f"{data.get_column('Age').median():.0f}", "years"),
+            class_="stat-strip",
+        )
+
     @render.plot
     def days_histogram():
         color_column = COLOR_CHOICES[input.color_by()]
         data = filtered_data()
 
         if color_column is None:
-            mapping = aes(x="Days Lasted")
-            geom = geom_histogram(
-                binwidth=10, boundary=0, fill="#2c3e50", color="white"
+            plot = ggplot(data, aes(x="Days Lasted")) + geom_histogram(
+                binwidth=10, boundary=0, fill=TERRACOTTA, color=INK, size=0.7
             )
         else:
             # Cast to string so numeric columns like Season are treated as
             # discrete groups rather than a continuous color gradient.
             data = data.with_columns(pl.col(color_column).cast(pl.String))
-            mapping = aes(x="Days Lasted", fill=color_column)
-            geom = geom_histogram(binwidth=5, boundary=0, color="white")
+            levels = sorted(data.get_column(color_column).unique().to_list())
+            palette = [
+                CATEGORY_COLORS[i % len(CATEGORY_COLORS)] for i in range(len(levels))
+            ]
+            plot = (
+                ggplot(data, aes(x="Days Lasted", fill=color_column))
+                + geom_histogram(binwidth=5, boundary=0, color=INK, size=0.5)
+                + scale_fill_manual(values=palette)
+            )
 
         return (
-            ggplot(data, mapping)
-            + geom
-            + labs(x="Days Lasted", y="Number of Contestants", fill=input.color_by())
-            + theme_minimal()
+            plot
+            + labs(x="DAYS LASTED", y="CONTESTANTS", fill=input.color_by().upper())
+            + plot_theme()
         )
+
+    @render.text
+    def row_count():
+        return f"{filtered_data().height} rows shown"
 
     @render.data_frame
     def contestants_table():

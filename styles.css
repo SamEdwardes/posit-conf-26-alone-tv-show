@@ -1,0 +1,336 @@
+/* ==========================================================================
+   Alone Explorer — "field report" theme
+   Near-black canvas, hairline cards, terracotta + teal accents.
+   ========================================================================== */
+
+:root {
+  --ink: #0b1110;
+  --ink-raised: #101716;
+  --ink-card: #0f1514;
+  --hairline: rgba(255, 255, 255, 0.08);
+  --hairline-strong: rgba(255, 255, 255, 0.16);
+  --text: #d8d5cf;
+  --text-dim: #8c8983;
+  --text-faint: #5f5d58;
+  --terracotta: #c5654f;
+  --teal: #5f9e94;
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+    Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+html,
+body {
+  background-color: var(--ink);
+  color: var(--text);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Title bar ----------------------------------------------------------- */
+
+.navbar,
+.bslib-page-title,
+header.navbar {
+  background-color: var(--ink) !important;
+  border-bottom: 1px solid var(--hairline) !important;
+  box-shadow: none !important;
+}
+
+.navbar-brand,
+.navbar .navbar-brand {
+  font-family: var(--sans);
+  font-weight: 200;
+  font-size: 1.35rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: #f2efe9 !important;
+}
+
+/* --- Sidebar ------------------------------------------------------------- */
+
+.bslib-sidebar-layout > .sidebar {
+  background-color: var(--ink-raised) !important;
+  border-right: 1px solid var(--hairline);
+}
+
+.bslib-sidebar-layout > .sidebar .sidebar-content {
+  background-color: transparent;
+}
+
+.bslib-sidebar-layout > .main {
+  background-color: var(--ink);
+}
+
+.sidebar-title {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-title::before {
+  content: "●";
+  color: var(--terracotta);
+  margin-right: 0.6em;
+  font-size: 0.7em;
+  vertical-align: 0.15em;
+}
+
+/* Input labels read like log-file keys. */
+.shiny-input-container > label,
+.shiny-input-container .control-label,
+fieldset > legend {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0.45rem;
+}
+
+/* --- Form controls ------------------------------------------------------- */
+
+.form-select,
+.form-control,
+.selectize-input,
+.selectize-dropdown {
+  background-color: #0a0f0e !important;
+  border: 1px solid var(--hairline) !important;
+  border-radius: 4px !important;
+  color: var(--text) !important;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  box-shadow: none !important;
+}
+
+.form-select:focus,
+.form-control:focus,
+.selectize-input.focus {
+  border-color: var(--teal) !important;
+}
+
+.selectize-input > .item {
+  background-color: rgba(95, 158, 148, 0.14) !important;
+  border: 1px solid rgba(95, 158, 148, 0.35) !important;
+  border-radius: 3px !important;
+  color: #cfe4e0 !important;
+}
+
+.selectize-dropdown .active {
+  background-color: rgba(95, 158, 148, 0.18) !important;
+  color: #eae7e1 !important;
+}
+
+.form-check-label {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.form-check-input {
+  background-color: #0a0f0e;
+  border-color: var(--hairline-strong);
+}
+
+.form-check-input:checked {
+  background-color: var(--teal);
+  border-color: var(--teal);
+}
+
+/* Sliders */
+.irs--shiny .irs-line,
+.irs--shiny .irs-bar {
+  height: 4px;
+  top: 27px;
+}
+
+.irs--shiny .irs-line {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+}
+
+.irs--shiny .irs-bar {
+  background: var(--terracotta);
+  border: none;
+}
+
+.irs--shiny .irs-handle {
+  width: 12px;
+  height: 12px;
+  top: 23px;
+  border: 1px solid var(--terracotta);
+  background: #f2efe9;
+  box-shadow: none;
+}
+
+.irs--shiny .irs-from,
+.irs--shiny .irs-to,
+.irs--shiny .irs-single {
+  background-color: var(--terracotta);
+  font-family: var(--mono);
+  font-size: 0.66rem;
+}
+
+.irs--shiny .irs-from::before,
+.irs--shiny .irs-to::before,
+.irs--shiny .irs-single::before {
+  border-top-color: var(--terracotta);
+}
+
+.irs--shiny .irs-min,
+.irs--shiny .irs-max {
+  background: transparent;
+  color: var(--text-faint);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+}
+
+/* --- Cards --------------------------------------------------------------- */
+
+.card,
+.bslib-value-box {
+  background-color: var(--ink-card) !important;
+  border: 1px solid var(--hairline) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+.card-header {
+  background-color: transparent !important;
+  border-bottom: 1px solid var(--hairline) !important;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  padding: 0.85rem 1.1rem;
+}
+
+.card-footer {
+  background-color: transparent !important;
+  border-top: 1px solid var(--hairline) !important;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--text-faint);
+  padding: 0.7rem 1.1rem;
+}
+
+/* --- Stat strip (hand-rolled value boxes) -------------------------------- */
+
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  background-color: var(--ink-card);
+  overflow: hidden;
+}
+
+.stat {
+  padding: 1rem 1.2rem;
+  border-right: 1px solid var(--hairline);
+}
+
+.stat:last-child {
+  border-right: none;
+}
+
+.stat-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.stat-value {
+  font-family: var(--sans);
+  font-weight: 200;
+  font-size: 2rem;
+  line-height: 1.25;
+  color: #f2efe9;
+}
+
+.stat-value.accent {
+  color: var(--terracotta);
+}
+
+.stat-value.cool {
+  color: var(--teal);
+}
+
+.stat-note {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  color: var(--text-dim);
+}
+
+/* --- Data grid ----------------------------------------------------------- */
+
+.shiny-data-frame,
+.shiny-data-grid {
+  --shiny-datagrid-font-size: 0.82rem;
+}
+
+.shiny-data-grid table {
+  color: var(--text);
+  border-color: var(--hairline);
+}
+
+.shiny-data-grid thead th {
+  background-color: #0a0f0e !important;
+  border-bottom: 1px solid var(--hairline-strong) !important;
+  font-family: var(--mono);
+  font-size: 0.62rem !important;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint) !important;
+  font-weight: 400;
+}
+
+.shiny-data-grid tbody td {
+  background-color: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.shiny-data-grid tbody tr:hover td {
+  background-color: rgba(197, 101, 79, 0.07) !important;
+}
+
+/* Numeric-ish columns feel like readouts. */
+.shiny-data-grid tbody td {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Misc ---------------------------------------------------------------- */
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
+}
+
+.lede {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  max-width: 62ch;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.lede em {
+  color: #f2efe9;
+  font-style: italic;
+}
