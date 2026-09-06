@@ -259,16 +259,19 @@ fieldset > legend {
 /* --- Stat strip (hand-rolled value boxes) -------------------------------- */
 
 .stat-strip {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  display: flex;
+  flex-wrap: nowrap;
   gap: 0;
   border: 1px solid var(--hairline);
   border-radius: 10px;
   background-color: var(--ink-card);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .stat {
+  flex: 1 1 0;
+  min-width: 0;
   padding: 1rem 1.2rem;
   border-right: 1px solid var(--hairline);
 }
@@ -283,14 +286,22 @@ fieldset > legend {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stat-value {
   font-family: var(--sans);
   font-weight: 200;
-  font-size: 2rem;
+  /* Shrinks with the column instead of wrapping onto a second line. */
+  font-size: clamp(1.3rem, 2.2vw, 2rem);
   line-height: 1.25;
   color: #f2efe9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-value.accent {
@@ -305,6 +316,9 @@ fieldset > legend {
   font-family: var(--mono);
   font-size: 0.64rem;
   color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* --- Data grid ----------------------------------------------------------- */

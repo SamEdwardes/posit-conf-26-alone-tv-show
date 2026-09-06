@@ -106,13 +106,6 @@ app_ui = ui.page_sidebar(
             choices=list(COLOR_CHOICES.keys()),
             selected="None",
         ),
-        ui.input_selectize(
-            "season",
-            "Season",
-            choices=[str(s) for s in SEASONS],
-            selected=[str(s) for s in SEASONS],
-            multiple=True,
-        ),
         ui.input_checkbox_group("gender", "Gender", choices=GENDERS, selected=GENDERS),
         ui.input_checkbox_group(
             "status", "Status", choices=STATUSES, selected=STATUSES
@@ -127,6 +120,16 @@ app_ui = ui.page_sidebar(
             max=DAYS_MAX,
             value=[DAYS_MIN, DAYS_MAX],
         ),
+        ui.input_radio_buttons(
+            "season",
+            "Season",
+            choices=[str(s) for s in SEASONS],
+            # "" matches no choice, so nothing is checked to start, which
+            # means every season is shown.
+            selected="",
+            inline=True,
+        ),
+        ui.input_action_link("clear_seasons", "show all seasons"),
         title="Filters",
         width=290,
     ),
@@ -165,7 +168,9 @@ app_ui = ui.page_sidebar(
 def server(input, output, session):
     @reactive.calc
     def filtered_data() -> pl.DataFrame:
-        seasons_selected = [int(s) for s in input.season()]
+        season = input.season()
+        # No season checked means no season filter at all.
+        seasons_selected = SEASONS if not season else [int(season)]
         return CONTESTANTS.filter(
             pl.col("Season").is_in(seasons_selected),
             pl.col("Gender").is_in(input.gender()),
@@ -173,6 +178,11 @@ def server(input, output, session):
             pl.col("Age").is_between(input.age()[0], input.age()[1]),
             pl.col("Days Lasted").is_between(input.days()[0], input.days()[1]),
         ).sort("Season", "Days Lasted")
+
+    @reactive.effect
+    @reactive.event(input.clear_seasons)
+    def _clear_seasons():
+        ui.update_radio_buttons("season", selected="")
 
     @render.ui
     def stat_strip():
@@ -194,7 +204,7 @@ def server(input, output, session):
             stat("Median days", f"{days.median():.0f}", "half made it this far"),
             stat(
                 "Longest run",
-                f"{longest['Days Lasted']}",
+                f"{longest['Days Lasted']:.0f}",
                 f"{longest['Name']} · S{longest['Season']}",
                 tone="cool",
             ),
@@ -207,6 +217,14 @@ def server(input, output, session):
     def days_histogram():
         color_column = COLOR_CHOICES[input.color_by()]
         data = filtered_data()
+
+        if data.height == 0:
+            return (
+                ggplot(pl.DataFrame({"Days Lasted": []}), aes(x="Days Lasted"))
+                + labs(x="DAYS LASTED", y="CONTESTANTS", title="No rows match")
+                + plot_theme()
+                + theme(plot_title=element_text(color=TEXT_FAINT, size=9))
+            )
 
         if color_column is None:
             plot = ggplot(data, aes(x="Days Lasted")) + geom_histogram(
