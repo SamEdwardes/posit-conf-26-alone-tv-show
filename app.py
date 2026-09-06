@@ -13,6 +13,7 @@ from plotnine import (
     ggplot,
     labs,
     scale_fill_manual,
+    scale_x_continuous,
     theme,
     theme_minimal,
 )
@@ -88,6 +89,20 @@ def plot_theme() -> theme:
     )
 
 
+def bin_axis(days: pl.Series, binwidth: int) -> scale_x_continuous:
+    """Label every histogram bin with its range, centred under the bar.
+
+    Bins start at 0 and are half-open on the right, matching
+    ``geom_histogram(boundary=0)``.
+    """
+    low = int(days.min() // binwidth) * binwidth
+    high = int(days.max() // binwidth) * binwidth + binwidth
+    edges = list(range(low, high + binwidth, binwidth))
+    centers = [(a + b) / 2 for a, b in zip(edges, edges[1:])]
+    labels = [f"{a}–{b}" for a, b in zip(edges, edges[1:])]
+    return scale_x_continuous(breaks=centers, labels=labels, expand=(0, 0.5))
+
+
 def stat(label: str, value: str, note: str = "", tone: str = "") -> ui.Tag:
     """One cell in the readout strip above the plot."""
     return ui.div(
@@ -106,10 +121,9 @@ app_ui = ui.page_sidebar(
             choices=list(COLOR_CHOICES.keys()),
             selected="None",
         ),
-        ui.input_checkbox_group("gender", "Gender", choices=GENDERS, selected=GENDERS),
-        ui.input_checkbox_group(
-            "status", "Status", choices=STATUSES, selected=STATUSES
-        ),
+        # Like Season, nothing checked means no filter, so all records show.
+        ui.input_checkbox_group("gender", "Gender", choices=GENDERS, selected=[]),
+        ui.input_checkbox_group("status", "Status", choices=STATUSES, selected=[]),
         ui.input_slider(
             "age", "Age", min=AGE_MIN, max=AGE_MAX, value=[AGE_MIN, AGE_MAX]
         ),
@@ -126,7 +140,6 @@ app_ui = ui.page_sidebar(
             choices=[str(s) for s in SEASONS],
             # Nothing checked by default, which means every season is shown.
             selected=[],
-            inline=True,
         ),
         ui.input_action_button(
             "clear_seasons",
@@ -171,13 +184,15 @@ app_ui = ui.page_sidebar(
 def server(input, output, session):
     @reactive.calc
     def filtered_data() -> pl.DataFrame:
+        # For each checkbox group, nothing checked means no filter at all.
         seasons = input.season()
-        # No season checked means no season filter at all.
         seasons_selected = SEASONS if not seasons else [int(s) for s in seasons]
+        genders_selected = list(input.gender()) or GENDERS
+        statuses_selected = list(input.status()) or STATUSES
         return CONTESTANTS.filter(
             pl.col("Season").is_in(seasons_selected),
-            pl.col("Gender").is_in(input.gender()),
-            pl.col("Status").is_in(input.status()),
+            pl.col("Gender").is_in(genders_selected),
+            pl.col("Status").is_in(statuses_selected),
             pl.col("Age").is_between(input.age()[0], input.age()[1]),
             pl.col("Days Lasted").is_between(input.days()[0], input.days()[1]),
         ).sort("Season", "Days Lasted")
@@ -229,9 +244,11 @@ def server(input, output, session):
                 + theme(plot_title=element_text(color=TEXT_FAINT, size=9))
             )
 
+        binwidth = 10 if color_column is None else 5
+
         if color_column is None:
             plot = ggplot(data, aes(x="Days Lasted")) + geom_histogram(
-                binwidth=10, boundary=0, fill=TERRACOTTA, color=INK, size=0.7
+                binwidth=binwidth, boundary=0, fill=TERRACOTTA, color=INK, size=0.7
             )
         else:
             # Cast to string so numeric columns like Season are treated as
@@ -243,14 +260,16 @@ def server(input, output, session):
             ]
             plot = (
                 ggplot(data, aes(x="Days Lasted", fill=color_column))
-                + geom_histogram(binwidth=5, boundary=0, color=INK, size=0.5)
+                + geom_histogram(binwidth=binwidth, boundary=0, color=INK, size=0.5)
                 + scale_fill_manual(values=palette)
             )
 
         return (
             plot
+            + bin_axis(data.get_column("Days Lasted"), binwidth)
             + labs(x="DAYS LASTED", y="CONTESTANTS", fill=input.color_by().upper())
             + plot_theme()
+            + theme(axis_text_x=element_text(angle=45, ha="right"))
         )
 
     @render.text
