@@ -128,7 +128,11 @@ app_ui = ui.page_sidebar(
             selected=[],
             inline=True,
         ),
-        ui.input_action_link("clear_seasons", "show all seasons"),
+        ui.input_action_button(
+            "clear_seasons",
+            "Show all seasons",
+            class_="btn-reset",
+        ),
         title="Filters",
         width=290,
     ),

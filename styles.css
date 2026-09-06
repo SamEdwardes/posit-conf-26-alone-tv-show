@@ -178,6 +178,71 @@ fieldset > legend {
   box-shadow: 0 0 0 2px rgba(95, 158, 148, 0.25) !important;
 }
 
+/* Season checkboxes: fixed grid so boxes and numbers line up in columns. */
+#season .shiny-options-group {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.45rem 0.5rem;
+}
+
+#season .checkbox-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: var(--text);
+  cursor: pointer;
+}
+
+#season input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  width: 0.95rem;
+  height: 0.95rem;
+  margin: 0;
+  background-color: #0a0f0e;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+#season input[type="checkbox"]:checked {
+  background-color: var(--teal);
+  border-color: var(--teal);
+}
+
+#season input[type="checkbox"]:focus-visible {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px rgba(95, 158, 148, 0.25);
+}
+
+/* "Show all seasons" reset button */
+.btn-reset {
+  margin-top: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  background-color: transparent;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.btn-reset:hover,
+.btn-reset:focus {
+  background-color: rgba(95, 158, 148, 0.12);
+  border-color: var(--teal);
+  color: #eae7e1;
+}
+
 /* Sliders */
 .irs--shiny .irs-line,
 .irs--shiny .irs-bar {
