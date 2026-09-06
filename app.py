@@ -120,13 +120,12 @@ app_ui = ui.page_sidebar(
             max=DAYS_MAX,
             value=[DAYS_MIN, DAYS_MAX],
         ),
-        ui.input_radio_buttons(
+        ui.input_checkbox_group(
             "season",
             "Season",
             choices=[str(s) for s in SEASONS],
-            # "" matches no choice, so nothing is checked to start, which
-            # means every season is shown.
-            selected="",
+            # Nothing checked by default, which means every season is shown.
+            selected=[],
             inline=True,
         ),
         ui.input_action_link("clear_seasons", "show all seasons"),
@@ -168,9 +167,9 @@ app_ui = ui.page_sidebar(
 def server(input, output, session):
     @reactive.calc
     def filtered_data() -> pl.DataFrame:
-        season = input.season()
+        seasons = input.season()
         # No season checked means no season filter at all.
-        seasons_selected = SEASONS if not season else [int(season)]
+        seasons_selected = SEASONS if not seasons else [int(s) for s in seasons]
         return CONTESTANTS.filter(
             pl.col("Season").is_in(seasons_selected),
             pl.col("Gender").is_in(input.gender()),
@@ -182,7 +181,7 @@ def server(input, output, session):
     @reactive.effect
     @reactive.event(input.clear_seasons)
     def _clear_seasons():
-        ui.update_radio_buttons("season", selected="")
+        ui.update_checkbox_group("season", selected=[])
 
     @render.ui
     def stat_strip():
