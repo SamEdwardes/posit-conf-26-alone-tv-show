@@ -167,14 +167,16 @@ app_ui = ui.page_sidebar(
         class_="lede",
     ),
     ui.output_ui("stat_strip"),
-    ui.card(
-        ui.card_header("Days lasted — distribution"),
-        ui.output_plot("days_histogram"),
-    ),
-    ui.card(
-        ui.card_header("Contestant log"),
-        ui.output_data_frame("contestants_table"),
-        ui.card_footer(ui.output_text("row_count")),
+    ui.layout_column_wrap(
+        ui.card(
+            ui.card_header("Days lasted — distribution"),
+            ui.output_plot("days_histogram"),
+        ),
+        ui.card(
+            ui.card_header("Contestant log"),
+            ui.output_data_frame("contestants_table"),
+            ui.card_footer(ui.output_text("row_count")),
+        ),
     ),
     title="Alone",
     fillable=True,
