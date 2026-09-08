@@ -50,6 +50,8 @@ hooks = [
       "--exclude",
       ".ruff_cache/",
       "--exclude",
+      ".posit/publish/",
+      "--exclude",
       "AGENTS.md",
       "--exclude",
       "CLAUDE.md",

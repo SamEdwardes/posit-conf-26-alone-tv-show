@@ -20,22 +20,28 @@
   },
   "files": {
     "requirements.txt": {
-      "checksum": "1b211ca91a713140e4d78e26ac8e065b"
+      "checksum": "a1220cf94a96410258062d5573ecc8d7"
+    },
+    ".gitignore": {
+      "checksum": "15b8e24e3c893c0198bc78414fa9fbca"
     },
     ".python-version": {
       "checksum": "789ee353b44223a8ed8031aa190631dd"
     },
     "app.py": {
-      "checksum": "613e2b87bc5c6f02b056a85048b309d0"
+      "checksum": "9257bbd46b852085052ae213ad42b845"
     },
     "data/alone-contestants.csv": {
       "checksum": "72dff73edd91972d4632accc053e41ff"
     },
     "pyproject.toml": {
-      "checksum": "bdda0f0675779f34f6dddf7b22cd9f6b"
+      "checksum": "6a4adfda2694300f513378d6d7780a54"
+    },
+    "styles.css": {
+      "checksum": "45d85a3637eb3fe17bd120dd83da085f"
     },
     "uv.lock": {
-      "checksum": "f8b8ef1ea8b78b2d9f32a43e70df848f"
+      "checksum": "700fc40c3a07504d9cf6add4e729bb05"
     }
   }
 }
